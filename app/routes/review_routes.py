@@ -39,21 +39,49 @@ def create_review():
 @review_bp.route('/reviews', methods=['GET'])
 def get_reviews():
     """
-    Retorna uma lista de todos os reviews.
+    Retorna uma lista paginada de todos os reviews.
+    Aceita os parâmetros 'page' (página atual) e 'per_page' (itens por página).
     ---
     tags:
       - Reviews
+    parameters:
+      - name: page
+        in: query
+        type: integer
+        default: 1
+        description: O número da página a ser retornada.
+      - name: per_page
+        in: query
+        type: integer
+        default: 9
+        description: O número de reviews por página.
     responses:
       200:
-        description: Uma lista de todos os reviews.
+        description: Uma lista paginada de reviews.
         schema:
-          type: array
-          items:
-            $ref: '#/definitions/ReviewOutput'
+          $ref: '#/definitions/ReviewPaginationOutput'
     """
-    reviews = Review.query.order_by(Review.date_posted.desc()).all()
-    return jsonify([review.to_json() for review in reviews]), 200
-
+    # Pega os parâmetros da URL, com valores padrão caso não sejam fornecidos.
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 9, type=int)
+    
+    pagination = Review.query.order_by(Review.date_posted.desc()).paginate(
+        page=page, per_page=per_page, error_out=False
+    )
+    
+    # O objeto 'pagination' contém os itens da página atual e metadados.
+    reviews_on_page = pagination.items
+    
+    # Dicionário com os dados da paginação para retornar ao front-end.
+    return jsonify({
+        'items': [review.to_json() for review in reviews_on_page],
+        'total_pages': pagination.pages,
+        'total_items': pagination.total,
+        'page': pagination.page,
+        'per_page': pagination.per_page,
+        'has_next': pagination.has_next,
+        'has_prev': pagination.has_prev
+    }), 200
 # 3. ROTA PARA BUSCAR UM REVIEW ESPECÍFICO POR ID
 @review_bp.route('/reviews/<int:review_id>', methods=['GET'])
 def get_review(review_id):

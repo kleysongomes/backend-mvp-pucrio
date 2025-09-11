@@ -1,3 +1,4 @@
+import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flasgger import Swagger
@@ -10,8 +11,11 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
 
+    db_path = app.config['SQLALCHEMY_DATABASE_URI'].replace('sqlite:///', '')
+    db_dir = os.path.dirname(db_path)
+    os.makedirs(db_dir, exist_ok=True)
+
     CORS(app)
-    
     db.init_app(app)
 
     swagger_config = {
@@ -52,6 +56,21 @@ def create_app():
                     "title": {"type": "string"},
                     "content": {"type": "string"},
                     "date_posted": {"type": "string", "format": "date-time"}
+                }
+            },
+            "ReviewPaginationOutput": {
+                "type": "object",
+                "properties": {
+                    "items": {
+                        "type": "array",
+                        "items": {"$ref": "#/definitions/ReviewOutput"}
+                    },
+                    "total_pages": {"type": "integer"},
+                    "total_items": {"type": "integer"},
+                    "page": {"type": "integer"},
+                    "per_page": {"type": "integer"},
+                    "has_next": {"type": "boolean"},
+                    "has_prev": {"type": "boolean"}
                 }
             }
         }

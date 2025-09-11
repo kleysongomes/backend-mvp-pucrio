@@ -55,20 +55,12 @@ Siga os passos abaixo para configurar e executar o projeto em seu ambiente local
     * Crie uma cópia do arquivo `.env.example` e renomeie para `.env`.
     * Abra o arquivo `.env` e adicione uma chave secreta segura para a variável `SECRET_KEY`.
 
-5.  **Crie o Banco de Dados**
-    * Execute o console interativo do Python:
+5.  **Inicialize o Banco de Dados**
+    * Utilize nosso script de gerenciamento para criar o banco de dados e suas tabelas com um único e simples comando:
         ```bash
-        python
+        python manage.py init-db
         ```
-    * Dentro do console, execute os seguintes comandos para criar as tabelas:
-        ```python
-        from app import create_app, db
-        from app.models.review_model import Review
-        app = create_app()
-        app.app_context().push()
-        db.create_all()
-        exit()
-        ```
+    * Você verá uma mensagem de sucesso, e o arquivo do banco de dados será criado em `app/database/reviews.db`.
 
 6.  **Inicie o Servidor**
     ```bash
@@ -81,6 +73,21 @@ A API estará rodando em `http://127.0.0.1:5000`.
 
 ## 📚 Documentação da API (Swagger)
 
-Com o servidor em execução, a documentação completa e interativa da API está disponível em:
+Com o servidor em execução, a documentação completa e interativa da API, onde você pode testar cada endpoint, está disponível em:
 
 [http://127.0.0.1:5000/apidocs/](http://127.0.0.1:5000/apidocs/)
+
+---
+
+## 🌐 Rotas da API (Endpoints)
+
+Abaixo está um resumo das rotas disponíveis na API.
+
+| Método HTTP | Endpoint                       | Descrição                                                                 |
+| :---------- | :----------------------------- | :------------------------------------------------------------------------ |
+| `POST`      | `/api/reviews`                 | Cria um novo review.                                                      |
+| `GET`       | `/api/reviews`                 | Lista todos os reviews de forma paginada (`?page=1&per_page=9`).          |
+| `GET`       | `/api/reviews/<int:review_id>` | Obtém um review específico pelo seu ID.                                   |
+| `PUT`       | `/api/reviews/<int:review_id>` | Atualiza um review existente pelo seu ID.                                 |
+| `DELETE`    | `/api/reviews/<int:review_id>` | Deleta um review pelo seu ID.                                             |
+| `GET`       | `/api/reviews/search`          | Busca reviews por um termo no título ou conteúdo (`?term=Jesus`).         |
