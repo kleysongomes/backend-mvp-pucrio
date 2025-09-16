@@ -30,7 +30,7 @@ Siga os passos abaixo para configurar e executar o projeto em seu ambiente local
 
 1.  **Clone o Repositório**
     ```bash
-    git clone [https://github.com/SEU_USUARIO/backend-mvp-pucrio.git](https://github.com/SEU_USUARIO/backend-mvp-pucrio.git)
+    git clone https://github.com/kleysongomes/backend-mvp-pucrio.git
     cd backend-mvp-pucrio
     ```
 
